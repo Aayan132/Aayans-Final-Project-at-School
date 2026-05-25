@@ -19,6 +19,8 @@ namespace Aayans_Final_Project_at_School
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        SpriteFont PressStart2P;
+        SpriteFont font;
         Screen currentScreen;
         Rectangle window;
         MouseState mouseState;
@@ -28,10 +30,10 @@ namespace Aayans_Final_Project_at_School
         Texture2D shipTexture;
         Texture2D laserTexture;
         Texture2D barrierTexture;
-
-        Rectangle barrierrect;
+        Rectangle barrierrect1, barrierrect2, barrierrect3;
         Rectangle ship;
         int shipSpeed = 5;
+        int menuChoice = 0;
         List<Rectangle> lasers = new List<Rectangle>();
 
         public Game1()
@@ -51,18 +53,21 @@ namespace Aayans_Final_Project_at_School
 
             currentScreen = Screen.Intro;
             ship = new Rectangle(window.Width / 2 - 40, 500, 80, 80);
-            barrierrect = new Rectangle(80, 400, 180, 60);
+            barrierrect1 = new Rectangle(80, 400, 180, 60);
+            barrierrect2 = new Rectangle(313, 400, 180, 60);
+            barrierrect3 = new Rectangle(545, 400, 180, 60);
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            introScreen = Content.Load<Texture2D>("SpaceInvadersIntro.");
+            introScreen = Content.Load<Texture2D>("SIIntroScreen");
             backgroundTexture = Content.Load<Texture2D>("SpaceInvadersBackground");
             shipTexture = Content.Load<Texture2D>("Spaceship");
             laserTexture = Content.Load<Texture2D>("lazer_image");
             barrierTexture = Content.Load<Texture2D>("OGBarrier");
+            font = Content.Load<SpriteFont>("font");
         }
 
         protected override void Update(GameTime gameTime)
@@ -78,9 +83,28 @@ namespace Aayans_Final_Project_at_School
 
             if (currentScreen == Screen.Intro)
             {
-                if (mouseState.LeftButton == ButtonState.Pressed)
+                if (keyboard.IsKeyDown(Keys.Up) && previousKeyboard.IsKeyUp(Keys.Up))
                 {
-                    currentScreen = Screen.Single;
+                    menuChoice--;
+                    if (menuChoice < 0)
+                       menuChoice = 1;
+                }
+                if (keyboard.IsKeyDown(Keys.Down) && previousKeyboard.IsKeyUp(Keys.Down))
+                {
+                    menuChoice--;
+                    if (menuChoice < 1)
+                        menuChoice = 0;
+                }
+                if ((keyboard.IsKeyDown(Keys.Enter)) && previousKeyboard.IsKeyUp(Keys.Enter))
+                {
+                    if (menuChoice == 0)
+                    {
+                        currentScreen = Screen.Single;
+                    }
+                    else if (menuChoice == 1)
+                    {
+                        currentScreen = Screen.Duo;
+                    }
                 }
             }
 
@@ -108,6 +132,7 @@ namespace Aayans_Final_Project_at_School
                     if (lasers[i].Y < 0)
                         lasers.RemoveAt(i);
                 }
+
             }
 
             previousKeyboard = keyboard;
@@ -123,18 +148,33 @@ namespace Aayans_Final_Project_at_School
             if (currentScreen == Screen.Intro)
             {
                 _spriteBatch.Draw(introScreen, window, Color.White);
+
+                if (menuChoice == 0 )
+                {
+                    _spriteBatch.DrawString(font, "> 1 PLAYER", new Vector2(310, 420), Color.Yellow);
+                    _spriteBatch.DrawString(font, " 2 PLAYER", new Vector2(310, 445), Color.White);
+
+                }
+                else
+                {
+                    _spriteBatch.DrawString(font, " 1 PLAYER", new Vector2(310, 420), Color.White);
+                    _spriteBatch.DrawString(font, "> 2 PLAYER", new Vector2(310, 445), Color.Yellow);
+                }
             }
             else if (currentScreen == Screen.Single)
             {
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
-                _spriteBatch.Draw(barrierTexture, barrierrect, Color.MediumPurple);
+                _spriteBatch.Draw(barrierTexture, barrierrect1, Color.MediumPurple);
+                _spriteBatch.Draw(barrierTexture, barrierrect2, Color.MediumPurple);
+                _spriteBatch.Draw(barrierTexture, barrierrect3, Color.MediumPurple);
 
                 for (int i = 0; i < lasers.Count; i++)
                 {
                     _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
                 }
             }
+
 
             _spriteBatch.End();
             base.Draw(gameTime);
