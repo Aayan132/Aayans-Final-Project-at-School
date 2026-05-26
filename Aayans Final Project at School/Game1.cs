@@ -19,7 +19,7 @@ namespace Aayans_Final_Project_at_School
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        SpriteFont PressStart2P;
+        Color neonGreen;
         SpriteFont font;
         Screen currentScreen;
         Rectangle window;
@@ -32,9 +32,16 @@ namespace Aayans_Final_Project_at_School
         Texture2D barrierTexture;
         Rectangle barrierrect1, barrierrect2, barrierrect3;
         Rectangle ship;
+        //int barriercolumn = 3;
+        //int barrierwidth = 130;
+        //int barrierheight = 100;
+        //int barrierspacing = 200;
+        //int barrierhealth = 600;
         int shipSpeed = 5;
         int menuChoice = 0;
         List<Rectangle> lasers = new List<Rectangle>();
+        //List<Rectangle> barriers = new List<Rectangle>();
+
 
         public Game1()
         {
@@ -56,6 +63,7 @@ namespace Aayans_Final_Project_at_School
             barrierrect1 = new Rectangle(80, 400, 180, 60);
             barrierrect2 = new Rectangle(313, 400, 180, 60);
             barrierrect3 = new Rectangle(545, 400, 180, 60);
+            neonGreen = new Color(57, 255, 20);
             base.Initialize();
         }
 
@@ -91,8 +99,8 @@ namespace Aayans_Final_Project_at_School
                 }
                 if (keyboard.IsKeyDown(Keys.Down) && previousKeyboard.IsKeyUp(Keys.Down))
                 {
-                    menuChoice--;
-                    if (menuChoice < 1)
+                    menuChoice++;
+                    if (menuChoice > 1)
                         menuChoice = 0;
                 }
                 if ((keyboard.IsKeyDown(Keys.Enter)) && previousKeyboard.IsKeyUp(Keys.Enter))
@@ -151,14 +159,14 @@ namespace Aayans_Final_Project_at_School
 
                 if (menuChoice == 0 )
                 {
-                    _spriteBatch.DrawString(font, "> 1 PLAYER", new Vector2(310, 420), Color.Yellow);
+                    _spriteBatch.DrawString(font, "> 1 PLAYER", new Vector2(310, 420), neonGreen);
                     _spriteBatch.DrawString(font, " 2 PLAYER", new Vector2(310, 445), Color.White);
 
                 }
                 else
                 {
                     _spriteBatch.DrawString(font, " 1 PLAYER", new Vector2(310, 420), Color.White);
-                    _spriteBatch.DrawString(font, "> 2 PLAYER", new Vector2(310, 445), Color.Yellow);
+                    _spriteBatch.DrawString(font, "> 2 PLAYER", new Vector2(310, 445), neonGreen);
                 }
             }
             else if (currentScreen == Screen.Single)
@@ -174,7 +182,6 @@ namespace Aayans_Final_Project_at_School
                     _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
                 }
             }
-
 
             _spriteBatch.End();
             base.Draw(gameTime);
