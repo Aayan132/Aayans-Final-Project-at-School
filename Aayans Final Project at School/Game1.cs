@@ -31,12 +31,7 @@ namespace Aayans_Final_Project_at_School
         Texture2D laserTexture;
         Texture2D barrierTexture;
         Rectangle barrierrect1, barrierrect2, barrierrect3;
-        Rectangle ship;
-        //int barriercolumn = 3;
-        //int barrierwidth = 130;
-        //int barrierheight = 100;
-        //int barrierspacing = 200;
-        //int barrierhealth = 600;
+        Rectangle ship; 
         int shipSpeed = 5;
         int menuChoice = 0;
         List<Rectangle> lasers = new List<Rectangle>();
@@ -143,6 +138,60 @@ namespace Aayans_Final_Project_at_School
 
             }
 
+            if (currentScreen == Screen.Duo)
+            {
+                if (keyboard.IsKeyDown(Keys.Up) && previousKeyboard.IsKeyUp(Keys.Up))
+                {
+                    menuChoice--;
+                    if (menuChoice < 0)
+                        menuChoice = 1;
+                }
+                if (keyboard.IsKeyDown(Keys.Down) && previousKeyboard.IsKeyUp(Keys.Down))
+                {
+                    menuChoice++;
+                    if (menuChoice > 1)
+                        menuChoice = 0;
+                }
+                if ((keyboard.IsKeyDown(Keys.Enter)) && previousKeyboard.IsKeyUp(Keys.Enter))
+                {
+                    if (menuChoice == 0)
+                    {
+                        currentScreen = Screen.Single;
+                    }
+                    else if (menuChoice == 1)
+                    {
+                        currentScreen = Screen.Duo;
+                    }
+                }
+
+
+            }
+
+            if (currentScreen == Screen.Duo)
+            {
+                if (keyboard.IsKeyDown(Keys.Left) && ship.X > 0)
+                {
+                    ship.X -= shipSpeed;
+                }
+
+                if (keyboard.IsKeyDown(Keys.Right) && ship.Right < window.Width)
+                {
+                    ship.X += shipSpeed;
+                }
+
+                if (keyboard.IsKeyDown(Keys.Space) && previousKeyboard.IsKeyUp(Keys.Space))
+                {
+                    lasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
+                }
+
+                for (int i = lasers.Count - 1; i >= 0; i--)
+                {
+                    lasers[i] = new Rectangle(lasers[i].X, lasers[i].Y - 8, lasers[i].Width, lasers[i].Height);
+
+                    if (lasers[i].Y < 0)
+                        lasers.RemoveAt(i);
+                }
+            }
             previousKeyboard = keyboard;
             base.Update(gameTime);
         }
@@ -170,6 +219,20 @@ namespace Aayans_Final_Project_at_School
                 }
             }
             else if (currentScreen == Screen.Single)
+            {
+                _spriteBatch.Draw(backgroundTexture, window, Color.White);
+                _spriteBatch.Draw(shipTexture, ship, Color.White);
+                _spriteBatch.Draw(barrierTexture, barrierrect1, Color.MediumPurple);
+                _spriteBatch.Draw(barrierTexture, barrierrect2, Color.MediumPurple);
+                _spriteBatch.Draw(barrierTexture, barrierrect3, Color.MediumPurple);
+
+                for (int i = 0; i < lasers.Count; i++)
+                {
+                    _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
+                }
+            }
+
+            else if (currentScreen == Screen.Duo)
             {
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
