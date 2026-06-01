@@ -31,7 +31,8 @@ namespace Aayans_Final_Project_at_School
         Texture2D laserTexture;
         Texture2D barrierTexture;
         Rectangle barrierrect1, barrierrect2, barrierrect3;
-        Rectangle ship; 
+        Rectangle ship;
+        Rectangle ship2;
         int shipSpeed = 5;
         int menuChoice = 0;
         List<Rectangle> lasers = new List<Rectangle>();
@@ -55,6 +56,7 @@ namespace Aayans_Final_Project_at_School
 
             currentScreen = Screen.Intro;
             ship = new Rectangle(window.Width / 2 - 40, 500, 80, 80);
+            ship2 = new Rectangle(130, 500, 80, 80);
             barrierrect1 = new Rectangle(80, 400, 180, 60);
             barrierrect2 = new Rectangle(313, 400, 180, 60);
             barrierrect3 = new Rectangle(545, 400, 180, 60);
@@ -169,6 +171,7 @@ namespace Aayans_Final_Project_at_School
 
             if (currentScreen == Screen.Duo)
             {
+
                 if (keyboard.IsKeyDown(Keys.Left) && ship.X > 0)
                 {
                     ship.X -= shipSpeed;
@@ -208,14 +211,14 @@ namespace Aayans_Final_Project_at_School
 
                 if (menuChoice == 0 )
                 {
-                    _spriteBatch.DrawString(font, "> 1 PLAYER", new Vector2(310, 420), neonGreen);
-                    _spriteBatch.DrawString(font, " 2 PLAYER", new Vector2(310, 445), Color.White);
+                    _spriteBatch.DrawString(font, "> 1: SI Game", new Vector2(290, 420), neonGreen);
+                    _spriteBatch.DrawString(font, " 2: Tutorial", new Vector2(290, 445), Color.White);
 
                 }
                 else
                 {
-                    _spriteBatch.DrawString(font, " 1 PLAYER", new Vector2(310, 420), Color.White);
-                    _spriteBatch.DrawString(font, "> 2 PLAYER", new Vector2(310, 445), neonGreen);
+                    _spriteBatch.DrawString(font, " 1: SI Game", new Vector2(290, 420), Color.White);
+                    _spriteBatch.DrawString(font, "> 2: Tutorial", new Vector2(290, 445), neonGreen);
                 }
             }
             else if (currentScreen == Screen.Single)
