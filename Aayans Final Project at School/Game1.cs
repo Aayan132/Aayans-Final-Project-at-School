@@ -19,25 +19,45 @@ namespace Aayans_Final_Project_at_School
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        //a is for alien
+        //l is for laser
+
+        List<Rectangle> aliens = new List<Rectangle>();
+        List<Color> alienColor = new List<Color>();
+        List<Rectangle> lasers = new List<Rectangle>();
+
         Color neonGreen;
         SpriteFont font;
         Screen currentScreen;
-        Rectangle window;
         MouseState mouseState;
         KeyboardState previousKeyboard;
+
+        Rectangle window;
+        Rectangle barrierrect1, barrierrect2, barrierrect3;
+        Rectangle ship;
+        Rectangle ship2;
+
         Texture2D introScreen;
         Texture2D backgroundTexture;
         Texture2D shipTexture;
         Texture2D laserTexture;
         Texture2D barrierTexture;
-        Rectangle barrierrect1, barrierrect2, barrierrect3;
-        Rectangle ship;
-        Rectangle ship2;
+        Texture2D alien1;
+        Texture2D alien2;
+        Texture2D alien3;
+        Texture2D alien4;
+        Texture2D alien5;
+        Texture2D alien6;
+
         int shipSpeed = 5;
         int menuChoice = 0;
-        List<Rectangle> lasers = new List<Rectangle>();
-        //List<Rectangle> barriers = new List<Rectangle>();
-
+        int alienSpeed = 1;
+        int alienDirection = 1;
+        int alienWidth = 40;
+        int alienHeight = 30;
+        int startX = 100;
+        int spacingX = 8;
+        int columns = 9;
 
         public Game1()
         {
@@ -61,6 +81,28 @@ namespace Aayans_Final_Project_at_School
             barrierrect2 = new Rectangle(313, 400, 180, 60);
             barrierrect3 = new Rectangle(545, 400, 180, 60);
             neonGreen = new Color(57, 255, 20);
+
+            for (int row = 0; row < 6; row++)
+            {
+                for (int col = 0; col < columns; col++)
+                {
+                    aliens.Add(new Rectangle(startX + col * (alienWidth + spacingX), 10 + row * 50, alienWidth, alienHeight));
+                    
+                    if (row == 0)
+                        alienColor.Add(neonGreen);
+                    else if (row == 1)
+                        alienColor.Add(Color.Blue);
+                    else if (row == 2)
+                        alienColor.Add(Color.Purple);
+                    else if (row == 3)
+                        alienColor.Add(Color.Yellow);
+                    else if (row == 4)
+                        alienColor.Add(Color.Red);
+                    else
+                        alienColor.Add(Color.YellowGreen);
+
+                }
+            }
             base.Initialize();
         }
 
@@ -73,6 +115,12 @@ namespace Aayans_Final_Project_at_School
             laserTexture = Content.Load<Texture2D>("lazer_image");
             barrierTexture = Content.Load<Texture2D>("OGBarrier");
             font = Content.Load<SpriteFont>("font");
+            alien1 = Content.Load<Texture2D>("Alien 1");
+            alien2 = Content.Load<Texture2D>("Alien 2");
+            alien3 = Content.Load<Texture2D>("Alien 3");
+            alien4 = Content.Load<Texture2D>("Alien 4");
+            alien5 = Content.Load<Texture2D>("Alien 5");
+            alien6 = Content.Load<Texture2D>("Alien 6");
         }
 
         protected override void Update(GameTime gameTime)
@@ -92,7 +140,7 @@ namespace Aayans_Final_Project_at_School
                 {
                     menuChoice--;
                     if (menuChoice < 0)
-                       menuChoice = 1;
+                        menuChoice = 1;
                 }
                 if (keyboard.IsKeyDown(Keys.Down) && previousKeyboard.IsKeyUp(Keys.Down))
                 {
@@ -138,6 +186,44 @@ namespace Aayans_Final_Project_at_School
                         lasers.RemoveAt(i);
                 }
 
+                for (int i = 0; i < aliens.Count; i++)
+                {
+                    aliens[i] = new Rectangle(aliens[i].X + alienSpeed * alienDirection, aliens[i].Y, aliens[i].Width, aliens[i].Height);
+                }
+
+                bool hitWall = false;
+
+                for (int i = 0; i < aliens.Count; i++)
+                {
+                    if (aliens[i].X <= 0 || aliens[i].X + aliens[i].Width >= window.Width)
+                    {
+                        hitWall = true;
+                    }
+                }
+
+                if (hitWall == true)
+                {
+                    alienDirection *= -1;
+
+                    for (int i = 0; i < aliens.Count; i++)
+                    {
+                        aliens[i] = new Rectangle(aliens[i].X, aliens[i].Y + 20, aliens[i].Width, aliens[i].Height);
+                    }
+                }
+
+                for (int l = lasers.Count - 1; l >= 0; l--)
+                {
+                    for (int a = aliens.Count - 1; a >= 0; a--)
+                    {
+                        if (lasers[l].Intersects(aliens[a]))
+                        {
+                            lasers.RemoveAt(l);
+                            aliens.RemoveAt(a);
+                            alienColor.RemoveAt(a);
+                            break;
+                        }
+                    }
+                }
             }
 
             if (currentScreen == Screen.Duo)
@@ -209,7 +295,7 @@ namespace Aayans_Final_Project_at_School
             {
                 _spriteBatch.Draw(introScreen, window, Color.White);
 
-                if (menuChoice == 0 )
+                if (menuChoice == 0)
                 {
                     _spriteBatch.DrawString(font, "> 1: SI Game", new Vector2(290, 420), neonGreen);
                     _spriteBatch.DrawString(font, " 2: Tutorial", new Vector2(290, 445), Color.White);
@@ -232,6 +318,11 @@ namespace Aayans_Final_Project_at_School
                 for (int i = 0; i < lasers.Count; i++)
                 {
                     _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
+                }
+
+                for (int i = 0; i < aliens.Count; i++)
+                {
+                    _spriteBatch.Draw(alien1, aliens[i], alienColor[i]);
                 }
             }
 
