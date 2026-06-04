@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace Aayans_Final_Project_at_School
 {
@@ -25,6 +26,10 @@ namespace Aayans_Final_Project_at_School
         List<Rectangle> aliens = new List<Rectangle>();
         List<Color> alienColor = new List<Color>();
         List<Rectangle> lasers = new List<Rectangle>();
+        List<Rectangle> barriers = new List<Rectangle>();
+        List<int> barriersHealth = new List<int>();
+
+
 
         Color neonGreen;
         SpriteFont font;
@@ -58,6 +63,10 @@ namespace Aayans_Final_Project_at_School
         int startX = 100;
         int spacingX = 8;
         int columns = 9;
+        int barrierSpacing = 200;
+        int a1points = 40;
+        int a2points = 30;
+        int a3_6points = 20;
 
         public Game1()
         {
@@ -77,9 +86,12 @@ namespace Aayans_Final_Project_at_School
             currentScreen = Screen.Intro;
             ship = new Rectangle(window.Width / 2 - 40, 500, 80, 80);
             ship2 = new Rectangle(130, 500, 80, 80);
-            barrierrect1 = new Rectangle(80, 400, 180, 60);
-            barrierrect2 = new Rectangle(313, 400, 180, 60);
-            barrierrect3 = new Rectangle(545, 400, 180, 60);
+            barriers.Add(new Rectangle(80, 400, 180, 60));
+            barriers.Add(new Rectangle(313, 400, 180, 60));
+            barriers.Add(new Rectangle(545, 400, 180, 60));
+            barriersHealth.Add(300);
+            barriersHealth.Add(300);
+            barriersHealth.Add(300);
             neonGreen = new Color(57, 255, 20);
 
             for (int row = 0; row < 6; row++)
@@ -224,66 +236,34 @@ namespace Aayans_Final_Project_at_School
                         }
                     }
                 }
-            }
 
-            if (currentScreen == Screen.Duo)
-            {
-                if (keyboard.IsKeyDown(Keys.Up) && previousKeyboard.IsKeyUp(Keys.Up))
+
+
+                for (int l = lasers.Count - 1; l >= 0; l--)
                 {
-                    menuChoice--;
-                    if (menuChoice < 0)
-                        menuChoice = 1;
-                }
-                if (keyboard.IsKeyDown(Keys.Down) && previousKeyboard.IsKeyUp(Keys.Down))
-                {
-                    menuChoice++;
-                    if (menuChoice > 1)
-                        menuChoice = 0;
-                }
-                if ((keyboard.IsKeyDown(Keys.Enter)) && previousKeyboard.IsKeyUp(Keys.Enter))
-                {
-                    if (menuChoice == 0)
+                    for (int b = barriers.Count - 1; b >= 0; b--)
                     {
-                        currentScreen = Screen.Single;
-                    }
-                    else if (menuChoice == 1)
-                    {
-                        currentScreen = Screen.Duo;
-                    }
-                }
+                        if (lasers[l].Intersects(barriers[b]))
+                        {
+                            lasers.RemoveAt(l);
+                            barriersHealth[b] -= 50;
 
+                            if (barriersHealth[b] <= 0)
+                            {
+                                barriers.RemoveAt(b);
+                                barriersHealth.RemoveAt(b);
+                            }
 
+                            break;
+
+                        }
+
+                previousKeyboard = keyboard;
+                base.Update(gameTime);
             }
-
-            if (currentScreen == Screen.Duo)
-            {
-
-                if (keyboard.IsKeyDown(Keys.Left) && ship.X > 0)
-                {
-                    ship.X -= shipSpeed;
-                }
-
-                if (keyboard.IsKeyDown(Keys.Right) && ship.Right < window.Width)
-                {
-                    ship.X += shipSpeed;
-                }
-
-                if (keyboard.IsKeyDown(Keys.Space) && previousKeyboard.IsKeyUp(Keys.Space))
-                {
-                    lasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
-                }
-
-                for (int i = lasers.Count - 1; i >= 0; i--)
-                {
-                    lasers[i] = new Rectangle(lasers[i].X, lasers[i].Y - 8, lasers[i].Width, lasers[i].Height);
-
-                    if (lasers[i].Y < 0)
-                        lasers.RemoveAt(i);
-                }
-            }
-            previousKeyboard = keyboard;
-            base.Update(gameTime);
         }
+    }
+}
 
         protected override void Draw(GameTime gameTime)
         {
@@ -311,9 +291,11 @@ namespace Aayans_Final_Project_at_School
             {
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
-                _spriteBatch.Draw(barrierTexture, barrierrect1, Color.MediumPurple);
-                _spriteBatch.Draw(barrierTexture, barrierrect2, Color.MediumPurple);
-                _spriteBatch.Draw(barrierTexture, barrierrect3, Color.MediumPurple);
+
+                for (int i = 0; i < barriers.Count; i++)
+                {
+                    _spriteBatch.Draw(barrierTexture, barriers[i], Color.MediumPurple);
+                }
 
                 for (int i = 0; i < lasers.Count; i++)
                 {
@@ -324,6 +306,7 @@ namespace Aayans_Final_Project_at_School
                 {
                     _spriteBatch.Draw(alien1, aliens[i], alienColor[i]);
                 }
+
             }
 
             else if (currentScreen == Screen.Duo)
