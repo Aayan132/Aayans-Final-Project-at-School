@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 
@@ -20,13 +21,14 @@ namespace Aayans_Final_Project_at_School
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        //a is for alien
-        //l is for laser
+        Random rng = new Random();
 
         List<Rectangle> aliens = new List<Rectangle>();
         List<Color> alienColor = new List<Color>();
-        List<Rectangle> lasers = new List<Rectangle>();
+        List<Rectangle> alienLasers = new List<Rectangle>();
+        List<Rectangle> shipLasers = new List<Rectangle>();
         List<Rectangle> barriers = new List<Rectangle>();
+        List<Texture2D> alienTextures = new List<Texture2D>();
         List<int> barriersHealth = new List<int>();
 
 
@@ -38,7 +40,7 @@ namespace Aayans_Final_Project_at_School
         KeyboardState previousKeyboard;
 
         Rectangle window;
-        Rectangle barrierrect1, barrierrect2, barrierrect3;
+        Rectangle barrierrect;
         Rectangle ship;
         Rectangle ship2;
 
@@ -46,7 +48,9 @@ namespace Aayans_Final_Project_at_School
         Texture2D backgroundTexture;
         Texture2D shipTexture;
         Texture2D laserTexture;
-        Texture2D barrierTexture;
+        Texture2D ogBarrier;
+        Texture2D slightBarrier;
+        Texture2D lastBarrier;
         Texture2D alien1;
         Texture2D alien2;
         Texture2D alien3;
@@ -63,10 +67,7 @@ namespace Aayans_Final_Project_at_School
         int startX = 100;
         int spacingX = 8;
         int columns = 9;
-        int barrierSpacing = 200;
-        int a1points = 40;
-        int a2points = 30;
-        int a3_6points = 20;
+        int score = 0;
 
         public Game1()
         {
@@ -89,31 +90,41 @@ namespace Aayans_Final_Project_at_School
             barriers.Add(new Rectangle(80, 400, 180, 60));
             barriers.Add(new Rectangle(313, 400, 180, 60));
             barriers.Add(new Rectangle(545, 400, 180, 60));
-            barriersHealth.Add(300);
-            barriersHealth.Add(300);
-            barriersHealth.Add(300);
+            barriersHealth.Add(500);
+            barriersHealth.Add(500);
+            barriersHealth.Add(500);
             neonGreen = new Color(57, 255, 20);
 
             for (int row = 0; row < 6; row++)
             {
                 for (int col = 0; col < columns; col++)
                 {
-                    aliens.Add(new Rectangle(startX + col * (alienWidth + spacingX), 10 + row * 50, alienWidth, alienHeight));
-                    
-                    if (row == 0)
-                        alienColor.Add(neonGreen);
-                    else if (row == 1)
-                        alienColor.Add(Color.Blue);
-                    else if (row == 2)
-                        alienColor.Add(Color.Purple);
-                    else if (row == 3)
-                        alienColor.Add(Color.Yellow);
-                    else if (row == 4)
-                        alienColor.Add(Color.Red);
-                    else
-                        alienColor.Add(Color.YellowGreen);
+                    aliens.Add(new Rectangle(startX + col * (alienWidth + spacingX), 30 + row * 50, alienWidth, alienHeight));
 
+                    if (row == 0)
+                    {
+                        alienColor.Add(Color.Lime);
+                    }
+                    else if (row == 1)
+                    {
+                        alienColor.Add(Color.Cyan);
+                    }
+                    else if (row == 2)
+                    {
+                        alienColor.Add(Color.Magenta);
+                    }
+                    else if (row == 3)
+                    {
+                        alienColor.Add(Color.Yellow);
+                    }
+                    else if (row == 4)
+                    {
+                        alienColor.Add(Color.Orange);
+                    }
+                    else
+                        alienColor.Add(Color.Red);
                 }
+
             }
             base.Initialize();
         }
@@ -125,7 +136,9 @@ namespace Aayans_Final_Project_at_School
             backgroundTexture = Content.Load<Texture2D>("SpaceInvadersBackground");
             shipTexture = Content.Load<Texture2D>("Spaceship");
             laserTexture = Content.Load<Texture2D>("lazer_image");
-            barrierTexture = Content.Load<Texture2D>("OGBarrier");
+            ogBarrier = Content.Load<Texture2D>("OGBarrier");
+            slightBarrier = Content.Load<Texture2D>("SlightBarrier");
+            lastBarrier = Content.Load<Texture2D>("LastBarrier");
             font = Content.Load<SpriteFont>("font");
             alien1 = Content.Load<Texture2D>("Alien 1");
             alien2 = Content.Load<Texture2D>("Alien 2");
@@ -133,6 +146,37 @@ namespace Aayans_Final_Project_at_School
             alien4 = Content.Load<Texture2D>("Alien 4");
             alien5 = Content.Load<Texture2D>("Alien 5");
             alien6 = Content.Load<Texture2D>("Alien 6");
+
+            for (int row = 0; row < 6; row++)
+            {
+                for (int col = 0; col < columns; col++)
+                {
+                    if (row == 0)
+                    {
+                        alienTextures.Add(alien1);
+                    }
+                    else if (row == 1)
+                    {
+                        alienTextures.Add(alien2);
+                    }
+                    else if (row == 2)
+                    {
+                        alienTextures.Add(alien3);
+                    }
+                    else if (row == 3)
+                    {
+                        alienTextures.Add(alien4);
+                    }
+                    else if (row == 4)
+                    {
+                        alienTextures.Add(alien5);
+                    }
+                    else
+                    {
+                        alienTextures.Add(alien6);
+                    }
+                }
+            }
         }
 
         protected override void Update(GameTime gameTime)
@@ -187,15 +231,15 @@ namespace Aayans_Final_Project_at_School
 
                 if (keyboard.IsKeyDown(Keys.Space) && previousKeyboard.IsKeyUp(Keys.Space))
                 {
-                    lasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
+                    shipLasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
                 }
 
-                for (int i = lasers.Count - 1; i >= 0; i--)
+                for (int i = shipLasers.Count - 1; i >= 0; i--)
                 {
-                    lasers[i] = new Rectangle(lasers[i].X, lasers[i].Y - 8, lasers[i].Width, lasers[i].Height);
+                    shipLasers[i] = new Rectangle(shipLasers[i].X, shipLasers[i].Y - 8, shipLasers[i].Width, shipLasers[i].Height);
 
-                    if (lasers[i].Y < 0)
-                        lasers.RemoveAt(i);
+                    if (shipLasers[i].Y < 0)
+                        shipLasers.RemoveAt(i);
                 }
 
                 for (int i = 0; i < aliens.Count; i++)
@@ -223,15 +267,17 @@ namespace Aayans_Final_Project_at_School
                     }
                 }
 
-                for (int l = lasers.Count - 1; l >= 0; l--)
+                for (int l = shipLasers.Count - 1; l >= 0; l--)
                 {
                     for (int a = aliens.Count - 1; a >= 0; a--)
                     {
-                        if (lasers[l].Intersects(aliens[a]))
+                        if (shipLasers[l].Intersects(aliens[a]))
                         {
-                            lasers.RemoveAt(l);
+                            shipLasers.RemoveAt(l);
                             aliens.RemoveAt(a);
                             alienColor.RemoveAt(a);
+                            alienTextures.RemoveAt(a);
+                            score += 40;
                             break;
                         }
                     }
@@ -239,14 +285,14 @@ namespace Aayans_Final_Project_at_School
 
 
 
-                for (int l = lasers.Count - 1; l >= 0; l--)
+                for (int l = shipLasers.Count - 1; l >= 0; l--)
                 {
                     for (int b = barriers.Count - 1; b >= 0; b--)
                     {
-                        if (lasers[l].Intersects(barriers[b]))
+                        if (shipLasers[l].Intersects(barriers[b]))
                         {
-                            lasers.RemoveAt(l);
-                            barriersHealth[b] -= 50;
+                            shipLasers.RemoveAt(l);
+                            barriersHealth[b] -= 25;
 
                             if (barriersHealth[b] <= 0)
                             {
@@ -258,12 +304,15 @@ namespace Aayans_Final_Project_at_School
 
                         }
 
+                    }
+                }
+                
+                
+
                 previousKeyboard = keyboard;
                 base.Update(gameTime);
             }
         }
-    }
-}
 
         protected override void Draw(GameTime gameTime)
         {
@@ -291,36 +340,41 @@ namespace Aayans_Final_Project_at_School
             {
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
+                _spriteBatch.DrawString(font, "Score: " + score, new Vector2(338, 10), Color.White);
 
                 for (int i = 0; i < barriers.Count; i++)
                 {
-                    _spriteBatch.Draw(barrierTexture, barriers[i], Color.MediumPurple);
+                    if (barriersHealth[i] >= 300)
+                    {
+                        _spriteBatch.Draw(ogBarrier, barriers[i], Color.MediumPurple);
+                    }
+
+                    else if (barriersHealth[i] >= 150)
+                    {
+                        _spriteBatch.Draw(slightBarrier, barriers[i], Color.MediumPurple);
+                    }
+                    else if (barriersHealth[i] <= 150)
+                    {
+                        _spriteBatch.Draw(lastBarrier, barriers[i], Color.MediumPurple);
+
+                    }
                 }
 
-                for (int i = 0; i < lasers.Count; i++)
+                for (int i = 0; i < shipLasers.Count; i++)
                 {
-                    _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
+                    _spriteBatch.Draw(laserTexture, shipLasers[i], Color.White);
                 }
 
                 for (int i = 0; i < aliens.Count; i++)
                 {
-                    _spriteBatch.Draw(alien1, aliens[i], alienColor[i]);
+                    _spriteBatch.Draw(alienTextures[i], aliens[i], alienColor[i]);
                 }
 
             }
 
             else if (currentScreen == Screen.Duo)
             {
-                _spriteBatch.Draw(backgroundTexture, window, Color.White);
-                _spriteBatch.Draw(shipTexture, ship, Color.White);
-                _spriteBatch.Draw(barrierTexture, barrierrect1, Color.MediumPurple);
-                _spriteBatch.Draw(barrierTexture, barrierrect2, Color.MediumPurple);
-                _spriteBatch.Draw(barrierTexture, barrierrect3, Color.MediumPurple);
 
-                for (int i = 0; i < lasers.Count; i++)
-                {
-                    _spriteBatch.Draw(laserTexture, lasers[i], Color.White);
-                }
             }
 
             _spriteBatch.End();
