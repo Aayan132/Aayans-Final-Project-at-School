@@ -45,6 +45,7 @@ namespace Aayans_Final_Project_at_School
         Rectangle barrierrect;
         Rectangle ship;
         Rectangle ship2;
+        Rectangle boss;
 
         Texture2D introScreen;
         Texture2D backgroundTexture;
@@ -60,6 +61,7 @@ namespace Aayans_Final_Project_at_School
         Texture2D alien5;
         Texture2D alien6;
         Texture2D alienLaserTexture;
+        Texture2D bossTexture;
 
         int shipSpeed = 5;
         int menuChoice = 0;
@@ -91,6 +93,7 @@ namespace Aayans_Final_Project_at_School
             currentScreen = Screen.Intro;
             ship = new Rectangle(window.Width / 2 - 40, 500, 80, 80);
             ship2 = new Rectangle(130, 500, 80, 80);
+            boss = new Rectangle(270, 50, 250, 200);
             barriers.Add(new Rectangle(80, 400, 180, 60));
             barriers.Add(new Rectangle(313, 400, 180, 60));
             barriers.Add(new Rectangle(545, 400, 180, 60));
@@ -153,6 +156,7 @@ namespace Aayans_Final_Project_at_School
             alien4 = Content.Load<Texture2D>("Alien 4");
             alien5 = Content.Load<Texture2D>("Alien 5");
             alien6 = Content.Load<Texture2D>("Alien 6");
+            bossTexture = Content.Load<Texture2D>("AldworthBoss");
             alienLaserTexture = Content.Load<Texture2D>("alien_lazer");
 
 
@@ -378,7 +382,6 @@ namespace Aayans_Final_Project_at_School
                     }
 
                 }
-                previousKeyboard = keyboard;
                 base.Update(gameTime);
 
             }
@@ -456,6 +459,7 @@ namespace Aayans_Final_Project_at_School
             {
 
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
+                _spriteBatch.Draw(bossTexture, boss, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
                 _spriteBatch.DrawString(font, "FINAL BOSS FIGHT", new Vector2(260, 10), Color.White);
 
