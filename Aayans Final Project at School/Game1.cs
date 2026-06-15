@@ -15,7 +15,8 @@ namespace Aayans_Final_Project_at_School
             Single,
             Tutorial,
             Boss,
-            End
+            Win,
+            Loss
         }
 
 
@@ -73,6 +74,8 @@ namespace Aayans_Final_Project_at_School
         double score = 0;
         int shipLives = 3;
         int alienShootChance = 800;
+        int bossHealth = 100;
+        int bossShootChance = 50;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -90,7 +93,7 @@ namespace Aayans_Final_Project_at_School
 
             currentScreen = Screen.Intro;
             ship = new Rectangle(window.Width / 2 - 40, 500, 80, 80);
-            boss = new Rectangle(250, 50, 290, 200);
+            boss = new Rectangle(250, 60, 290, 200);
             barriers.Add(new Rectangle(80, 400, 180, 60));
             barriers.Add(new Rectangle(313, 400, 180, 60));
             barriers.Add(new Rectangle(545, 400, 180, 60));
@@ -284,6 +287,15 @@ namespace Aayans_Final_Project_at_School
                         }
                     }
 
+                    for (int i = 0; i < aliens.Count; i++)
+                    {
+                        if (aliens[i].Y >= 380)
+                        {
+                            currentScreen = Screen.Loss;
+                            break;
+                        }
+                    }
+
                     for (int l = shipLasers.Count - 1; l >= 0; l--)
                     {
                         for (int a = aliens.Count - 1; a >= 0; a--)
@@ -372,7 +384,7 @@ namespace Aayans_Final_Project_at_School
 
                                     if (shipLives == 0)
                                     {
-                                        currentScreen = Screen.End;
+                                        currentScreen = Screen.Loss;
                                     }
                                 }
                             }
@@ -443,6 +455,80 @@ namespace Aayans_Final_Project_at_School
                     {
                         alienLasers.RemoveAt(i);
                     }
+
+                    else
+                    {
+                        bool removed = false;
+
+                        for (int b = barriers.Count - 1; b >= 0; b--)
+                        {
+                            if (alienLasers[i].Intersects(barriers[b]))
+                            {
+                                alienLasers.RemoveAt(i);
+                                barriersHealth[b] -= 25;
+
+                                if (barriersHealth[b] <= 0)
+                                {
+                                    barriers.RemoveAt(b);
+                                    barriersHealth.RemoveAt(b);
+                                }
+
+                                removed = true;
+                                break;
+                            }
+                        }
+
+                        if (removed == false)
+                        {
+                            if (alienLasers[i].Intersects(ship))
+                            {
+                                alienLasers.RemoveAt(i);
+                                shipLives -= 1;
+                                lives.RemoveAt(lives.Count - 1);
+
+                                if (shipLives == 0)
+                                {
+                                    currentScreen = Screen.Loss;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                boss.X += alienDirection * 3;
+
+                if (boss.Left <= 0 || boss.Right >= window.Width)
+                {
+                    alienDirection *= -1;
+                }
+
+                if (rng.Next(bossShootChance) == 1)
+                {
+                    alienLasers.Add(new Rectangle(boss.Center.X - 5, boss.Bottom, 10, 25));
+                }
+
+                for (int l = shipLasers.Count - 1; l >= 0; l--)
+                {
+                    if (shipLasers[l].Intersects(boss))
+                    {
+                        shipLasers.RemoveAt(l);
+                        bossHealth -= 1;
+
+                        if (bossHealth <= 0)
+                        {
+                            currentScreen = Screen.Win;
+                        }
+                    }
+                }
+
+                for (int i = alienLasers.Count - 1; i >= 0; i--)
+                {
+                    alienLasers[i] = new Rectangle(alienLasers[i].X, alienLasers[i].Y + 6, alienLasers[i].Width, alienLasers[i].Height);
+
+                    if (alienLasers[i].Y > window.Height)
+                    {
+                        alienLasers.RemoveAt(i);
+                    }
                     else if (alienLasers[i].Intersects(ship))
                     {
                         alienLasers.RemoveAt(i);
@@ -452,10 +538,19 @@ namespace Aayans_Final_Project_at_School
 
                         if (shipLives <= 0)
                         {
-                            currentScreen = Screen.End;
+                            currentScreen = Screen.Loss;
                         }
                     }
                 }
+
+
+
+                if (bossHealth <= 50)
+                {
+                    bossShootChance = 25;
+                }
+
+
             }
             previousKeyboard = keyboard;
             base.Update(gameTime);
@@ -543,7 +638,9 @@ namespace Aayans_Final_Project_at_School
                 _spriteBatch.Draw(backgroundTexture, window, Color.White);
                 _spriteBatch.Draw(shipTexture, ship, Color.White);
                 _spriteBatch.Draw(bossTexture, boss, Color.White);
-                _spriteBatch.DrawString(font, "FINAL BOSS FIGHT", new Vector2(260, 10), Color.White);
+                _spriteBatch.DrawString(font, "FINAL BOSS FIGHT", new Vector2(260, 10), Color.Blue);
+                _spriteBatch.DrawString(font, "Boss HP: " + bossHealth, new Vector2(295, 35), Color.Red);
+
 
                 for (int i = 0; i < barriers.Count; i++)
                 {
@@ -563,6 +660,11 @@ namespace Aayans_Final_Project_at_School
                     }
                 }
 
+                for (int i = 0; i < alienLasers.Count; i++)
+                {
+                    _spriteBatch.Draw(alienLaserTexture, alienLasers[i], Color.Red);
+                }
+
                 for (int i = 0; i < shipLasers.Count; i++)
                 {
                     _spriteBatch.Draw(laserTexture, shipLasers[i], Color.White);
@@ -574,6 +676,15 @@ namespace Aayans_Final_Project_at_School
                 }
             }
 
+            else if (currentScreen == Screen.Win)
+            {
+                _spriteBatch.DrawString(font, "YOU DEFEATED MR. ALDWORTH!", new Vector2(180, 250), Color.Gold);
+            }
+
+            else if (currentScreen == Screen.Loss)
+            {
+                _spriteBatch.DrawString(font, "YOU LOST!", new Vector2(330, 250), Color.Red);
+            }
             _spriteBatch.End();
             base.Draw(gameTime);
         }
