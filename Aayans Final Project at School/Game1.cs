@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -41,6 +42,11 @@ namespace Aayans_Final_Project_at_School
         Screen currentScreen;
         MouseState mouseState;
         KeyboardState previousKeyboard;
+
+        SoundEffect shipLaserSound;
+        SoundEffect alienDeathSound;
+        SoundEffect aldworthDefeated;
+        SoundEffect shipLifeLost;
 
         Rectangle window;
         Rectangle ship;
@@ -158,6 +164,11 @@ namespace Aayans_Final_Project_at_School
             alien6 = Content.Load<Texture2D>("Alien 6");
             alienLaserTexture = Content.Load<Texture2D>("alien_lazer");
             bossTexture = Content.Load<Texture2D>("AldworthBoss");
+            shipLaserSound = Content.Load<SoundEffect>("LaserSound");
+            aldworthDefeated = Content.Load<SoundEffect>("AldworthBeat");
+            alienDeathSound = Content.Load<SoundEffect>("AlienDeathSound");
+            shipLifeLost = Content.Load<SoundEffect>("ShipHitSound");
+
 
 
 
@@ -252,6 +263,7 @@ namespace Aayans_Final_Project_at_School
                     if (keyboard.IsKeyDown(Keys.Space) && previousKeyboard.IsKeyUp(Keys.Space))
                     {
                         shipLasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
+                        shipLaserSound.Play();
                     }
 
                     for (int i = shipLasers.Count - 1; i >= 0; i--)
@@ -307,6 +319,7 @@ namespace Aayans_Final_Project_at_School
                                 alienColor.RemoveAt(a);
                                 alienTextures.RemoveAt(a);
                                 score += 50;
+                                alienDeathSound.Play();
                                 break;
                             }
                         }
@@ -381,6 +394,7 @@ namespace Aayans_Final_Project_at_School
                                     alienLasers.RemoveAt(i);
                                     shipLives -= 1;
                                     lives.RemoveAt(lives.Count - 1);
+                                    shipLifeLost.Play();
 
                                     if (shipLives == 0)
                                     {
@@ -413,6 +427,7 @@ namespace Aayans_Final_Project_at_School
                 if (keyboard.IsKeyDown(Keys.Space) && previousKeyboard.IsKeyUp(Keys.Space))
                 {
                     shipLasers.Add(new Rectangle(ship.X + ship.Width / 2 - 5, ship.Y, 10, 20));
+                    shipLaserSound.Play();
                 }
 
                 for (int i = shipLasers.Count - 1; i >= 0; i--)
@@ -485,6 +500,7 @@ namespace Aayans_Final_Project_at_School
                                 alienLasers.RemoveAt(i);
                                 shipLives -= 1;
                                 lives.RemoveAt(lives.Count - 1);
+                                shipLifeLost.Play();
 
                                 if (shipLives == 0)
                                 {
@@ -517,6 +533,7 @@ namespace Aayans_Final_Project_at_School
                         if (bossHealth <= 0)
                         {
                             currentScreen = Screen.Win;
+                            aldworthDefeated.Play();
                         }
                     }
                 }
@@ -569,20 +586,20 @@ namespace Aayans_Final_Project_at_School
                 if (menuChoice == 0)
                 {
                     _spriteBatch.DrawString(font, "> 1: SI Game", new Vector2(290, 420), neonGreen);
-                    _spriteBatch.DrawString(font, " 2: Tutorial", new Vector2(290, 445), Color.White);
+                    _spriteBatch.DrawString(font, " 2: Endless", new Vector2(290, 445), Color.White);
                     _spriteBatch.DrawString(font, " Boss Fight", new Vector2(600, 10), Color.White);
 
                 }
                 else if (menuChoice == 1)
                 {
                     _spriteBatch.DrawString(font, " 1: SI Game", new Vector2(290, 420), Color.White);
-                    _spriteBatch.DrawString(font, "> 2: Tutorial", new Vector2(290, 445), neonGreen);
+                    _spriteBatch.DrawString(font, "> 2: Endless", new Vector2(290, 445), neonGreen);
                     _spriteBatch.DrawString(font, " Boss Fight", new Vector2(600, 10), Color.White);
                 }
                 else if (menuChoice == 2)
                 {
                     _spriteBatch.DrawString(font, " 1: SI Game", new Vector2(290, 420), Color.White);
-                    _spriteBatch.DrawString(font, " 2: Tutorial", new Vector2(290, 445), Color.White);
+                    _spriteBatch.DrawString(font, " 2: Endless", new Vector2(290, 445), Color.White);
                     _spriteBatch.DrawString(font, " > Boss Fight", new Vector2(575, 10), neonGreen);
                 }
 

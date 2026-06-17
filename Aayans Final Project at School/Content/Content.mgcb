@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin AldworthBeat.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:AldworthBeat.wav
+
 #begin AldworthBoss.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -121,12 +127,30 @@
 /processorParam:TextureFormat=Color
 /build:alien_lazer.png
 
+#begin AlienDeathSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:AlienDeathSound.wav
+
 #begin font.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:font.spritefont
+
+#begin LaserSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:LaserSound.wav
+
+#begin LaserSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:LaserSound.wav
 
 #begin LastBarrier.png
 /importer:TextureImporter
@@ -163,6 +187,12 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:OGBarrier.png
+
+#begin ShipHitSound.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:ShipHitSound.wav
 
 #begin SIIntroScreen.png
 /importer:TextureImporter
